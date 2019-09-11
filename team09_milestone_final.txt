@@ -1,0 +1,693 @@
+CNIT272 Final Phase
+Benedict Chen: Steps 1-9, 14-21
+Nakul Chhabra: Steps 10-13
+Shiv Nair: Steps 22-25
+Adhitya Vadivel: Steps 26-30                                                                                 
+*********************************************************************************************************************************************************
+Step 1
+SQL Statement:
+SELECT paymentrecieptid, typeofpayment, amountpaid
+FROM payment_receipt
+WHERE amountpaid < 10000;
+Results:
+
+PAYME TYPEOFPAYMENT        AMOUNTPAID
+----- -------------------- ----------
+11113 Debit                       123
+11114 Credit                      537
+11116 Credit                      325
+11117 Credit                      682
+*********************************************************************************************************************************************************
+Step 2
+SQL Statement:
+SELECT depositnumber, depositamount, depositdate
+FROM deposit
+WHERE depositdate BETWEEN to_date('04-01-2018', 'mm-dd-yyyy') AND to_date('12-01-2018', 'mm-dd-yyyy');
+Results:
+DEPOS DEPOSITAMOUNT DEPOSITDA
+----- ------------- ---------
+57501       6593.99 24-NOV-18
+57502       1293.99 29-JUN-18
+57504       4532.99 14-NOV-18
+57505        547.99 13-JUL-18
+57506        123.99 11-AUG-18
+*********************************************************************************************************************************************************
+Step 3
+SQL Statement:
+SELECT employeeid, firstname
+FROM employee
+WHERE firstname LIKE 'R%';
+Results:
+EMPLO FIRSTNAME           
+----- --------------------
+00010 Rick                
+00020 Ryan                                                                                                                                                                                                            
+*********************************************************************************************************************************************************
+Step 4
+SQL Statement:
+SELECT purchaseorderid, quantityofproducts, unitcost, (quantityofproducts * unitcost) AS totalCost
+FROM purchase_order;
+Results:
+PURCH QUANTITYOFPRODUCTS   UNITCOST  TOTALCOST
+----- ------------------ ---------- ----------
+13001                527        321     169167
+13002                636        432     274752
+13003                457        543     248151
+13004                548        654     358392
+13005                183        765     139995
+13006                272        876     238272
+13007                631        987     622797
+13008                192        735     141120
+13009                435        523     227505
+13010                535        568     303880
+
+10 rows selected. 
+*********************************************************************************************************************************************************
+Step 5
+SQL Statement:
+SELECT inventoryid, "Size", totalprice
+FROM INVENTORY
+WHERE "Size" NOT IN('Small');
+Results:
+INVEN Size                 TOTALPRICE
+----- -------------------- ----------
+02    Medium                      159
+03    Large                       103
+04    Medium                      498
+05    Medium                       30
+07    Large                        82
+08    Large                       329
+10    Medium                      198
+
+7 rows selected. 
+*********************************************************************************************************************************************************
+Step 6
+SQL Statement:
+SELECT paymentrecieptid, NVL(typeofpayment,'***NotPaid***') AS typeOfPay
+FROM payment_receipt;
+Results:
+PAYME TYPEOFPAY           
+----- --------------------
+11111 Check               
+11112 ***NotPaid***       
+11113 Debit               
+11114 Credit              
+11115 ***NotPaid***       
+11116 Credit              
+11117 Credit              
+11119 ***NotPaid***       
+11120 ***NotPaid***       
+
+9 rows selected. 
+*********************************************************************************************************************************************************
+Step 7
+SQL Statement:
+SELECT depositnumber, depositamount, depositdate, bank_bankaccountnumber, employee_employeeid
+FROM deposit
+WHERE depositdate = (SELECT MIN(depositdate) FROM deposit);
+Results:
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57500       4493.99 25-JAN-18 2727272702 00014
+*********************************************************************************************************************************************************
+Step 8
+SQL Statement:
+SELECT COUNT(*), invoiceid
+FROM invoice
+WHERE description = 'Medium'
+GROUP BY invoiceid;
+Results:
+  COUNT(*) INVOI
+---------- -----
+         1 30303
+         1 60606
+         1 80808
+*********************************************************************************************************************************************************
+Step 9
+SQL Statement:
+SELECT SUM(paymentamount)AS TOTAL_PAYMENT
+FROM payment;
+Results:
+TOTAL_PAYMENT
+-------------
+      1081963
+*********************************************************************************************************************************************************
+Step 10
+SQL Statement:
+select avg(depositamount), depositdate
+from Deposit
+Group by depositdate;
+Results:
+AVG(DEPOSITAMOUNT) DEPOSITDA
+------------------ ---------
+           1293.99 29-JUN-18
+           3520.99 30-DEC-18
+           4532.99 14-NOV-18
+            123.99 11-AUG-18
+           6593.99 24-NOV-18
+            547.99 13-JUL-18
+            442.99 04-DEC-18
+           4493.99 25-JAN-18
+            535.99 07-DEC-18
+            767.99 02-MAR-18
+
+10 rows selected. 
+*********************************************************************************************************************************************************
+Step 11
+SQL Statement:
+select count(EmployeeID), Department
+from employee
+group by department
+having department = 'Consulting';
+Results:
+COUNT(EMPLOYEEID) DEPARTMENT                    
+----------------- ------------------------------
+                2 Consulting                    
+*********************************************************************************************************************************************************
+Step 12
+SQL Statement:
+select avg(quantityofproducts), unitcost, purchaseorderid
+from purchase_order
+where unitcost>700
+group by unitcost, purchaseorderid
+having avg(quantityofproducts) > 100;
+Results:
+AVG(QUANTITYOFPRODUCTS)   UNITCOST PURCH
+----------------------- ---------- -----
+                    631        987 13007
+                    192        735 13008
+                    183        765 13005
+                    272        876 13006
+*********************************************************************************************************************************************************
+Step 13
+SQL Statement:
+select c.clientid, firstname, lastname, clienttype, so.saleorderdescription
+from client c inner join salesorder so
+on c.clientid = so.client_clientid
+where so.saleorderdescription = 'Large' and clienttype='Service';
+Results:
+CLIEN FIRSTNAME            LASTNAME             CLIENTTYPE           SALEORDERDESCRIPTION          
+----- -------------------- -------------------- -------------------- ------------------------------
+20000 Tom                  Cruise               Service              Large                         
+80000 Brianna              Willis               Service              Large                         
+*********************************************************************************************************************************************************
+Step 14
+SQL Statement:
+SELECT IT.INVENTORYTYPEID, I.INVENTORYID, DESCRITPIONOFITEM, TO_CHAR("Date", 'Day, Month DD, YYYY')
+FROM INVENTORY_TYPE IT INNER JOIN INVENTORY I
+ON IT.INVENTORYTYPEID = I.INVENTORY_TYPE_INVENTORYTYPEID
+INNER JOIN ORDERITEM OI 
+ON I.INVENTORYID = OI.INVENTORY_INVENTORYID
+INNER JOIN SALESORDER SO
+ON SO.SALEORDERID = OI.SALESORDER_SALEORDERID;
+Results:
+INVEN INVEN DESCRITPIONOFITEM    TO_CHAR("DATE",'DAY,MONTHDD,Y
+----- ----- -------------------- -----------------------------
+0001  01    Service              Tuesday  , April     17, 2018
+0002  02    Service              Friday   , June      22, 2018
+0003  03    Hardware             Saturday , July      28, 2018
+0004  04    Hardware             Tuesday  , April     30, 2019
+0005  05    Hardware             Monday   , May       14, 2018
+0006  06    Software             Tuesday  , June      18, 2019
+0007  07    Software             Friday   , April     12, 2019
+0008  08    Software             Tuesday  , February  20, 2018
+0009  09    Software             Monday   , December  17, 2018
+0010  10    Service              Saturday , November  24, 2018
+
+10 rows selected. 
+****************************************************************************************************************************************
+Step 15
+SQL Statement:
+SELECT DEPARTMENTNUMBER, NUMBEROFEMPLOYEES 
+FROM DEPARTMENT
+WHERE NUMBEROFEMPLOYEES  NOT IN (SELECT MAX(NUMBEROFEMPLOYEES ) FROM DEPARTMENT);
+Results:
+DEPAR NUMBEROFEMPLOYEES
+----- -----------------
+00004                 1
+00005                 1
+00007                 1
+00008                 1
+****************************************************************************************************************************************
+Step 16
+SQL Statement:
+SELECT DEPOSITNUMBER, DEPOSITAMOUNT
+FROM DEPOSIT
+WHERE DEPOSITAMOUNT > (SELECT AVG(DEPOSITAMOUNT) FROM DEPOSIT);
+Results:
+DEPOS DEPOSITAMOUNT
+----- -------------
+57500       4493.99
+57501       6593.99
+57503       3520.99
+57504       4532.99
+
+****************************************************************************************************************************************
+Step 17
+SQL Statement:
+SELECT DEPOSITNUMBER, SUM(DEPOSITAMOUNT), DEPOSITDATE
+FROM DEPOSIT
+GROUP BY DEPOSITNUMBER, DEPOSITDATE;
+Results:
+DEPOS SUM(DEPOSITAMOUNT) DEPOSITDA
+----- ------------------ ---------
+57500            4493.99 25-JAN-18
+57501            6593.99 24-NOV-18
+57502            1293.99 29-JUN-18
+57503            3520.99 30-DEC-18
+57504            4532.99 14-NOV-18
+57505             547.99 13-JUL-18
+57506             123.99 11-AUG-18
+57507             535.99 07-DEC-18
+57508             767.99 02-MAR-18
+57509             442.99 04-DEC-18
+
+10 rows selected. 
+****************************************************************************************************************************************
+Step 18
+SQL Statement:
+SELECT E.EMPLOYEEID, FIRSTNAME, LASTNAME, PAYMENTRECIEPTID, TYPEOFPAYMENT
+FROM EMPLOYEE E LEFT JOIN PAYMENT_RECEIPT PR
+ON E.EMPLOYEEID = PR.EMPLOYEE_EMPLOYEEID;
+Results:
+EMPLO FIRSTNAME            LASTNAME             PAYME TYPEOFPAYMENT       
+----- -------------------- -------------------- ----- --------------------
+00010 Rick                 Ashley                                         
+00011 Budhha               Batman                                         
+00012 Ashley               madison                                        
+00013 Walc                 Library                                        
+00014 Tor                  Chur                                           
+00015 Big                  Small                                          
+00016 Engrish              Pam                                            
+00017 No                   Way                  11111 Check               
+00017 No                   Way                  11112                     
+00017 No                   Way                  11113 Debit               
+00017 No                   Way                  11114 Credit              
+
+EMPLO FIRSTNAME            LASTNAME             PAYME TYPEOFPAYMENT       
+----- -------------------- -------------------- ----- --------------------
+00017 No                   Way                  11120                     
+00017 No                   Way                  11116 Credit              
+00017 No                   Way                  11117 Credit              
+00017 No                   Way                  11119                     
+00017 No                   Way                  11115                     
+00018 Phat                 Little                                         
+00019 Maybe                Not                                            
+00020 Ryan                 Chey                                           
+00021 Chris                Andre                                          
+00022 Cheyenne             David                                          
+00023 Potato               Chips                                          
+
+EMPLO FIRSTNAME            LASTNAME             PAYME TYPEOFPAYMENT       
+----- -------------------- -------------------- ----- --------------------
+00026 Ben                  Down                                           
+00029 How                  About                                          
+
+24 rows selected. 
+****************************************************************************************************************************************
+Step 19
+SQL Statement:
+SELECT PO.PURCHASEORDERID, DESCRIPTION, S.SUPPLIERID, FIRSTNAME, LASTNAME
+FROM PURCHASE_ORDER PO RIGHT JOIN SUPPLIER S
+ON S.SUPPLIERID = PO.SUPPLIER_SUPPLIERID;
+Results:
+PURCH DESCRIPTION          SUPPL FIRSTNAME            LASTNAME            
+----- -------------------- ----- -------------------- --------------------
+13001 Ordered Computers    35001 Brodie               Peterson            
+13002 Ordered Mice         35002 Caylee               Richard             
+13003 Ordered Keyboards    35003 Jewel                Campos              
+13004 Ordered Headphones   35004 Lena                 Hall                
+13005 Ordered CPUs         35005 Cassius              Lowe                
+13006 Ordered PSUs         35006                                          
+13007 Ordered Trackpads    35007 Marley               Andersen            
+13008 Ordered Transistors  35008 Isaac                Brandt              
+13009 Ordered LEDs         35009                                          
+13010 Ordered Motherboards 35010 Chastity              Kerr               
+
+10 rows selected. 
+****************************************************************************************************************************************
+Step 20
+SQL Statement:
+SELECT INVOICEID, AMOUNTTOBEPAID, "Date"
+FROM INVOICE
+UNION 
+SELECT SALERETURNID, PRICERETURNED, DATERETURNED
+FROM SALE_RETURN;
+Results:
+INVOI AMOUNTTOBEPAID Date     
+----- -------------- ---------
+10101          15000 16-JAN-18
+10111            400 22-OCT-18
+12000          15000 15-FEB-18
+13000           8000 22-APR-18
+14000            700 19-JUN-18
+15000            800 18-AUG-18
+16000          30000 30-OCT-18
+20202          20000 26-FEB-18
+21000          20000 25-MAR-18
+30303           8000 13-MAR-18
+31000           1000 07-MAY-18
+
+INVOI AMOUNTTOBEPAID Date     
+----- -------------- ---------
+40404           1000 19-APR-18
+41000           2000 12-JUL-18
+50505            700 21-MAY-18
+51000           4000 23-SEP-18
+60606           2000 15-JUN-18
+61000            400 06-NOV-18
+70707            800 06-JUL-18
+80808           4000 10-AUG-18
+90909          30000 19-SEP-18
+
+20 rows selected. 
+****************************************************************************************************************************************
+Step 21
+SQL Statement:
+SELECT POPULARITY
+FROM ORDERITEM
+INTERSECT
+SELECT POPULARITY
+FROM INVENTORY_TYPE;
+Results:
+POPULARITY          
+--------------------
+High
+Low
+Medium
+****************************************************************************************************************************************
+Step 22
+I updated the Server Monitors in ITEMNAME from the ORDERITEM to say HD Monitor.
+SQL Statement:
+SELECT ITEMNAME
+FROM ORDERITEM;
+
+UPDATE ORDERITEM
+SET ITEMNAME = 'HD Monitors' WHERE ITEMNAME = 'Server Monitors';
+
+SELECT ITEMNAME
+FROM ORDERITEM;
+Results:
+ITEMNAME            
+--------------------
+Software Developer
+Server Monitors
+Motherboard
+Keyboards
+Mice
+Antivirus
+Operating System
+Office Package
+Database Creation
+IT Assistance
+
+10 rows selected. 
+
+1 row updated.
+
+ITEMNAME            
+--------------------
+Software Developer
+HD Monitors
+Motherboard
+Keyboards
+Mice
+Antivirus
+Operating System
+Office Package
+Database Creation
+IT Assistance
+
+10 rows selected. 
+
+****************************************************************************************************************************************
+Step 23
+I updated Rick’s Department to Accounting and his last name to Ferguson.
+SQL Statement:
+SELECT *
+FROM EMPLOYEE
+WHERE FIRStNAME = 'Rick';
+
+UPDATE EMPLOYEE
+SET DEPARTMENT = 'Accounting',
+LASTNAME = 'Ferguson' WHERE FIRSTNAME = 'Rick';
+
+SELECT *
+FROM EMPLOYEE
+WHERE FIRStNAME = 'Rick';
+Results:
+EMPLO DEPARTMENT                     FIRSTNAME            LASTNAME             EMAIL                PHONENUMBE STREETADDRESS                  CITY                 ST ZIPCO DEPAR
+----- ------------------------------ -------------------- -------------------- -------------------- ---------- ------------------------------ -------------------- -- ----- -----
+00010 Sales                          Rick                 Ashley               rick@gmail.com       123456781  23 Lux St                      Jersey               WY 56785 00000
+
+1 row updated.
+
+EMPLO DEPARTMENT                     FIRSTNAME            LASTNAME             EMAIL                PHONENUMBE STREETADDRESS                  CITY                 ST ZIPCO DEPAR
+----- ------------------------------ -------------------- -------------------- -------------------- ---------- ------------------------------ -------------------- -- ----- -----
+00010 Accounting                     Rick                 Ferguson             rick@gmail.com       123456781  23 Lux St                      Jersey               WY 56785 00000
+****************************************************************************************************************************************
+Step 24
+I added two rows with the depositid 57510 and 57511, amount of 352.99 for both, and dates october 14th and may 26th.
+SQL Statement:
+SELECT *
+FROM DEPOSIT;
+
+INSERT INTO deposit
+VALUES('57510', 352.99, to_date('10-14-2018', 'mm-dd-yyyy'), '2727272703', '00014');
+
+INSERT INTO deposit
+VALUES('57511', 352.99, to_date('04-26-2018', 'mm-dd-yyyy'), '2727272707', '00014');
+
+SELECT *
+FROM DEPOSIT;
+Results:
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57500       4493.99 25-JAN-18 2727272702 00014
+57501       6593.99 24-NOV-18 2727272704 00014
+57502       1293.99 29-JUN-18 2727272707 00014
+57503       3520.99 30-DEC-18 2727272704 00014
+57504       4532.99 14-NOV-18 2727272709 00014
+57505        547.99 13-JUL-18 2727272708 00014
+57506        123.99 11-AUG-18 2727272707 00014
+57507        535.99 07-DEC-18 2727272704 00014
+57508        767.99 02-MAR-18 2727272701 00014
+57509        442.99 04-DEC-18 2727272703 00014
+
+10 rows selected. 
+
+1 row inserted.
+
+1 row inserted.
+
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57500       4493.99 25-JAN-18 2727272702 00014
+57501       6593.99 24-NOV-18 2727272704 00014
+57502       1293.99 29-JUN-18 2727272707 00014
+57503       3520.99 30-DEC-18 2727272704 00014
+57504       4532.99 14-NOV-18 2727272709 00014
+57505        547.99 13-JUL-18 2727272708 00014
+57506        123.99 11-AUG-18 2727272707 00014
+57507        535.99 07-DEC-18 2727272704 00014
+57508        767.99 02-MAR-18 2727272701 00014
+57509        442.99 04-DEC-18 2727272703 00014
+57510        352.99 14-OCT-18 2727272703 00014
+
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57511        352.99 26-APR-18 2727272707 00014
+
+12 rows selected. 
+****************************************************************************************************************************************
+Step 25
+I deleted the row that had the deposit number as 57500.
+SQL Statement:
+SELECT *
+FROM DEPOSIT;
+
+DELETE FROM DEPOSIT
+WHERE DEPOSITNUMBER = 57500;
+
+SELECT *
+FROM DEPOSIT;
+Results:
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57500       4493.99 25-JAN-18 2727272702 00014
+57501       6593.99 24-NOV-18 2727272704 00014
+57502       1293.99 29-JUN-18 2727272707 00014
+57503       3520.99 30-DEC-18 2727272704 00014
+57504       4532.99 14-NOV-18 2727272709 00014
+57505        547.99 13-JUL-18 2727272708 00014
+57506        123.99 11-AUG-18 2727272707 00014
+57507        535.99 07-DEC-18 2727272704 00014
+57508        767.99 02-MAR-18 2727272701 00014
+57509        442.99 04-DEC-18 2727272703 00014
+57510        352.99 14-OCT-18 2727272703 00014
+
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57511        352.99 26-APR-18 2727272707 00014
+
+12 rows selected. 
+
+1 row deleted.
+
+DEPOS DEPOSITAMOUNT DEPOSITDA BANK_BANKA EMPLO
+----- ------------- --------- ---------- -----
+57501       6593.99 24-NOV-18 2727272704 00014
+57502       1293.99 29-JUN-18 2727272707 00014
+57503       3520.99 30-DEC-18 2727272704 00014
+57504       4532.99 14-NOV-18 2727272709 00014
+57505        547.99 13-JUL-18 2727272708 00014
+57506        123.99 11-AUG-18 2727272707 00014
+57507        535.99 07-DEC-18 2727272704 00014
+57508        767.99 02-MAR-18 2727272701 00014
+57509        442.99 04-DEC-18 2727272703 00014
+57510        352.99 14-OCT-18 2727272703 00014
+57511        352.99 26-APR-18 2727272707 00014
+
+11 rows selected. 
+****************************************************************************************************************************************
+Step 26
+Alter the Supplier table by adding in a new attribute called 'city'.
+SQL Statement:
+alter table supplier add city varchar2(20);
+
+Results:
+Table SUPPLIER altered.
+
+Before:
+Name                  Null?    Type         
+--------------------- -------- ------------ 
+SUPPLIERID            NOT NULL CHAR(5)      
+FIRSTNAME                      VARCHAR2(20) 
+LASTNAME                       VARCHAR2(20) 
+PHONENUMBER                    CHAR(10)     
+EMAIL                          VARCHAR2(20) 
+PRODUCTSPECIALIZATION          VARCHAR2(20) 
+RATING                         VARCHAR2(20) 
+
+After:
+Name                  Null?    Type         
+--------------------- -------- ------------ 
+SUPPLIERID            NOT NULL CHAR(5)      
+FIRSTNAME                      VARCHAR2(20) 
+LASTNAME                       VARCHAR2(20) 
+PHONENUMBER                    CHAR(10)     
+EMAIL                          VARCHAR2(20) 
+PRODUCTSPECIALIZATION          VARCHAR2(20) 
+RATING                         VARCHAR2(20) 
+CITY                           VARCHAR2(20) 
+****************************************************************************************************************************************
+Step 27
+Updated the Supplier table by assigning every 'city' field with the city 'Chicago'.
+SQL Statement:
+update supplier set city = 'Chicago';
+
+Results:
+10 rows updated.
+
+Before:
+SUPPL FIRSTNAME            LASTNAME             PHONENUMBE EMAIL                PRODUCTSPECIALIZATIO RATING               CITY                
+----- -------------------- -------------------- ---------- -------------------- -------------------- -------------------- --------------------
+35001 Brodie               Peterson             3759273548 bro@alpha.com        Computers            Great                                    
+35002 Caylee               Richard              9274936473 cay@beta.com         Mice                 Good                                     
+35003 Jewel                Campos               3834628372 jew@gamma.com        Keyboards            Poor                                     
+35004 Lena                 Hall                 1823746595 len@delta.com        Headphones           Fair                                     
+35005 Cassius              Lowe                 2938475639 cas@epsilon.com      CPUs                 Good                                     
+35006                                                                                                                                         
+35007 Marley               Andersen             5327384625 mar@eta.com          Trackpads            Poor                                     
+35008 Isaac                Brandt               6128374956 isa@theta.com        Transistors          Great                                    
+35009                                                                                                                                         
+35010 Chastity              Kerr                8438726251 cha@kappa.com        Motherboards         Good                                     
+
+10 rows selected. 
+
+After:
+SUPPL FIRSTNAME            LASTNAME             PHONENUMBE EMAIL                PRODUCTSPECIALIZATIO RATING               CITY                
+----- -------------------- -------------------- ---------- -------------------- -------------------- -------------------- --------------------
+35001 Brodie               Peterson             3759273548 bro@alpha.com        Computers            Great                Chi                 
+35002 Caylee               Richard              9274936473 cay@beta.com         Mice                 Good                 Chi                 
+35003 Jewel                Campos               3834628372 jew@gamma.com        Keyboards            Poor                 Chi                 
+35004 Lena                 Hall                 1823746595 len@delta.com        Headphones           Fair                 Chi                 
+35005 Cassius              Lowe                 2938475639 cas@epsilon.com      CPUs                 Good                 Chi                 
+35006                                                                                                                     Chi                 
+35007 Marley               Andersen             5327384625 mar@eta.com          Trackpads            Poor                 Chi                 
+35008 Isaac                Brandt               6128374956 isa@theta.com        Transistors          Great                Chi                 
+35009                                                                                                                     Chi                 
+35010 Chastity              Kerr                8438726251 cha@kappa.com        Motherboards         Good                 Chi                 
+
+****************************************************************************************************************************************
+Step 28
+I updated the cities of every record to be the substring Chi
+SQL Statement:
+update supplier set city = substr('Chicago',1,3);
+Results:
+10 rows updated.
+
+Before:
+SUPPL FIRSTNAME            LASTNAME             PHONENUMBE EMAIL                PRODUCTSPECIALIZATIO RATING               CITY                
+----- -------------------- -------------------- ---------- -------------------- -------------------- -------------------- --------------------
+35001 Brodie               Peterson             3759273548 bro@alpha.com        Computers            Great                Chicago             
+35002 Caylee               Richard              9274936473 cay@beta.com         Mice                 Good                 Chicago             
+35003 Jewel                Campos               3834628372 jew@gamma.com        Keyboards            Poor                 Chicago             
+35004 Lena                 Hall                 1823746595 len@delta.com        Headphones           Fair                 Chicago             
+35005 Cassius              Lowe                 2938475639 cas@epsilon.com      CPUs                 Good                 Chicago             
+35006                                                                                                                     Chicago             
+35007 Marley               Andersen             5327384625 mar@eta.com          Trackpads            Poor                 Chicago             
+35008 Isaac                Brandt               6128374956 isa@theta.com        Transistors          Great                Chicago             
+35009                                                                                                                     Chicago             
+35010 Chastity              Kerr                8438726251 cha@kappa.com        Motherboards         Good                 Chicago             
+
+10 rows selected. 
+
+After:
+SUPPL FIRSTNAME            LASTNAME             PHONENUMBE EMAIL                PRODUCTSPECIALIZATIO RATING               CITY                
+----- -------------------- -------------------- ---------- -------------------- -------------------- -------------------- --------------------
+35001 Brodie               Peterson             3759273548 bro@alpha.com        Computers            Great                Chi                 
+35002 Caylee               Richard              9274936473 cay@beta.com         Mice                 Good                 Chi                 
+35003 Jewel                Campos               3834628372 jew@gamma.com        Keyboards            Poor                 Chi                 
+35004 Lena                 Hall                 1823746595 len@delta.com        Headphones           Fair                 Chi                 
+35005 Cassius              Lowe                 2938475639 cas@epsilon.com      CPUs                 Good                 Chi                 
+35006                                                                                                                     Chi                 
+35007 Marley               Andersen             5327384625 mar@eta.com          Trackpads            Poor                 Chi                 
+35008 Isaac                Brandt               6128374956 isa@theta.com        Transistors          Great                Chi                 
+35009                                                                                                                     Chi                 
+35010 Chastity              Kerr                8438726251 cha@kappa.com        Motherboards         Good                 Chi                 
+
+
+****************************************************************************************************************************************
+Step 29
+I created an alternate key for city and an inversion entry for firstname.
+
+SQL Statement:
+create index city_alt_key on supplier (city);
+create index firstname_index on supplier(firstname);
+
+Results:
+Index created.
+
+Index created.
+****************************************************************************************************************************************
+Step 30
+I selected all of the records in the SUPPLIER table that have Chi as their city.
+
+SQL Statement:
+select * from supplier where city = 'Chi';
+
+Results:
+SUPPL FIRSTNAME            LASTNAME             PHONENUMBE EMAIL                PRODUCTSPECIALIZATIO RATING               CITY                
+----- -------------------- -------------------- ---------- -------------------- -------------------- -------------------- --------------------
+35001 Brodie               Peterson             3759273548 bro@alpha.com        Computers            Great                Chi                 
+35002 Caylee               Richard              9274936473 cay@beta.com         Mice                 Good                 Chi                 
+35003 Jewel                Campos               3834628372 jew@gamma.com        Keyboards            Poor                 Chi                 
+35004 Lena                 Hall                 1823746595 len@delta.com        Headphones           Fair                 Chi                 
+35005 Cassius              Lowe                 2938475639 cas@epsilon.com      CPUs                 Good                 Chi                 
+35006                                                                                                                     Chi                 
+35007 Marley               Andersen             5327384625 mar@eta.com          Trackpads            Poor                 Chi                 
+35008 Isaac                Brandt               6128374956 isa@theta.com        Transistors          Great                Chi                 
+35009                                                                                                                     Chi                 
+35010 Chastity              Kerr                8438726251 cha@kappa.com        Motherboards         Good                 Chi  
+****************************************************************************************************************************************
